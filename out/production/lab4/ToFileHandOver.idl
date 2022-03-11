@@ -1,0 +1,5 @@
+module ToFileHandOver {
+    interface HandOver {
+        attribute string handOver;
+    };
+};
