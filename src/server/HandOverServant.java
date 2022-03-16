@@ -3,13 +3,16 @@ package server;
 import ToFileHandOver.HandOverPOA;
 import org.omg.CORBA.ORB;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 
 public class HandOverServant extends HandOverPOA {
-    public static final String PATH = "file.txt";
+    public static final String FROM = "from.txt";
+    public static final String TO = "to.txt";
+
     private ORB orb;
 
     public void setOrb(ORB orb) {
@@ -18,15 +21,18 @@ public class HandOverServant extends HandOverPOA {
 
     @Override
     public String handOver() {
-        throw new UnsupportedOperationException();
+        try (FileInputStream fis = new FileInputStream(FROM);
+             FileOutputStream fos = new FileOutputStream(TO, true);
+             FileChannel channel = fis.getChannel()) {
+            channel.transferTo(0, channel.size(), Channels.newChannel(fos));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "null";
     }
 
     @Override
     public void handOver(String newHandOver) {
-        try {
-            Files.write(Paths.get(PATH), newHandOver.getBytes(), StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        throw new UnsupportedOperationException();
     }
 }

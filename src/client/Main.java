@@ -9,6 +9,11 @@ import org.omg.CosNaming.NamingContextExtHelper;
 import java.util.Scanner;
 
 public class Main {
+    private static final Scanner scanner;
+
+    static {
+        scanner = new Scanner(System.in);
+    }
     public static void main(String[] args) {
         try {
             ORB orb = ORB.init(args, null);
@@ -16,21 +21,38 @@ public class Main {
             NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
             HandOver handOverObj =  HandOverHelper.narrow(ncRef.resolve_str("ABC"));
 
-            Scanner scanner = new Scanner(System.in);
             while (true) {
-                System.out.println("Enter a string");
-                String s = scanner.nextLine();
-                if (s.equals("exit")) {
-                    break;
+                switch (menu()) {
+                    case 1:
+                        handOverObj.handOver();
+                        break;
+                    case 2:
+                        System.exit(0);
                 }
-                handOverObj.handOver(s);
             }
-
-            System.out.println("shutdown");
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
+    private static int menu() {
+        System.out.println("1 - handover file info");
+        System.out.println("2 - exit");
+        System.out.println();
+
+        int res;
+
+        while (true) {
+            System.out.print("Your choice: ");
+            if (!scanner.hasNext("[12]")) {
+                scanner.next();
+                System.out.println("Reenter value pls");
+            } else {
+                res = scanner.nextInt();
+                break;
+            }
+        }
+        return res;
+    }
 }
